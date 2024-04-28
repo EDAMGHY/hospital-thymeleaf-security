@@ -16,7 +16,7 @@
         <div class="card">
             <div class="card-header">List patients</div>
             <div class="card-body">
-                <form method="get" th:action="@{/index}">
+                <form method="get" th:action="@{/user/index}">
                     <label>Label</label>
                     <input type="text" name="keyword" th:value="${keyword}"/>
                     <button type="submit" class="btn btn-info">
@@ -32,8 +32,10 @@
                         <th>Date</th>
                         <th>Malade</th>
                         <th>Score</th>
-                        <th></th>
-                        <th></th>
+                        <th th:if="${#authorization.expression('hasRole(''ADMIN'')')}">
+                        </th>
+                        <th th:if="${#authorization.expression('hasRole(''ADMIN'')')}">
+                        </th>
                     </tr>
                     </thead>
                     <tbody>
@@ -43,16 +45,16 @@
                         <td th:text="${p.dateNaissance}"></td>
                         <td th:text="${p.malade}"></td>
                         <td th:text="${p.score}"></td>
-                        <td>
+                        <td th:if="${#authorization.expression('hasRole(''ADMIN'')')}">
                             <a onclick="return confirm('Are you sure!?')"
-                               th:href="@{/delete(id=${p.id},keyword=${keyword},page=${currentPage})}" class="btn
+                               th:href="@{/admin/delete(id=${p.id},keyword=${keyword},page=${currentPage})}" class="btn
                         btn-danger">
                                 <i class="bi bi-trash"></i>
                             </a>
                         </td>
-                        <td>
+                        <td th:if="${#authorization.expression('hasRole(''ADMIN'')')}">
                             <a
-                                    th:href="@{/edit(id=${p.id},keyword=${keyword},page=${currentPage})}" class="btn
+                                    th:href="@{/admin/edit(id=${p.id},keyword=${keyword},page=${currentPage})}" class="btn
                         btn-secondary">
                                 <i class="bi bi-pencil"></i>
                             </a>
@@ -66,7 +68,7 @@
                         <a
                                 th:class="${currentPage==status.index?'btn btn-info':'btn btn-outline-info'}"
                                 th:text="${status.index+1}"
-                                th:href="@{/index(keyword=${keyword},page=${status.index})}"></a>
+                                th:href="@{/user/index(keyword=${keyword},page=${status.index})}"></a>
                     </li>
                 </ul>
             </div>
