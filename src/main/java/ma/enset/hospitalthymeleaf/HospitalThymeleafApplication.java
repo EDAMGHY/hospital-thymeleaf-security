@@ -2,6 +2,7 @@ package ma.enset.hospitalthymeleaf;
 
 import ma.enset.hospitalthymeleaf.entities.Patient;
 import ma.enset.hospitalthymeleaf.repositories.PatientRepository;
+import ma.enset.hospitalthymeleaf.security.services.AccountService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
@@ -24,11 +25,6 @@ public class HospitalThymeleafApplication {
     }
 
     @Bean
-    public JdbcUserDetailsManager jdbcUserDetailsManager(DataSource dataSource) {
-        return new JdbcUserDetailsManager(dataSource);
-    }
-
-    @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
@@ -42,7 +38,7 @@ public class HospitalThymeleafApplication {
         };
     }
 
-    @Bean
+//    @Bean
     CommandLineRunner commandLineRunner(JdbcUserDetailsManager jdbcUserDetailsManager) {
         PasswordEncoder passwordEncoder = passwordEncoder();
         return args -> {
@@ -55,6 +51,23 @@ public class HospitalThymeleafApplication {
             jdbcUserDetailsManager.createUser(
                     User.withUsername("admin2").password(passwordEncoder.encode("1234")).roles("USER", "ADMIN").build()
             );
+        };
+    }
+
+    @Bean
+    CommandLineRunner commandLineRunnerUserDetails(AccountService accountService) {
+        return args -> {
+
+            accountService.addNewRole("USER");
+            accountService.addNewRole("ADMIN");
+            accountService.addNewUser("user1@gmail.com", "user1", "1234", "1234");
+            accountService.addNewUser("user2@gmail.com", "user2", "1234", "1234");
+            accountService.addNewUser("admin@gmail.com", "admin", "1234", "1234");
+
+            accountService.addRoleToUser("user1", "USER");
+            accountService.addRoleToUser("user2", "USER");
+            accountService.addRoleToUser("admin", "ADMIN");
+            accountService.addRoleToUser("admin", "USER");
         };
     }
 }

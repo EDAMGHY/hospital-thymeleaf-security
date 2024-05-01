@@ -1,5 +1,8 @@
 package ma.enset.hospitalthymeleaf.security;
 
+import lombok.AllArgsConstructor;
+import ma.enset.hospitalthymeleaf.security.services.UserDetailsServiceImpl;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.Customizer;
@@ -17,9 +20,15 @@ import javax.sql.DataSource;
 
 @Configuration
 @EnableWebSecurity
+@AllArgsConstructor
 public class SecurityConfig {
 
+    private UserDetailsServiceImpl userDetailsService;
 
+    //    @Bean
+    public JdbcUserDetailsManager jdbcUserDetailsManager(DataSource dataSource) {
+        return new JdbcUserDetailsManager(dataSource);
+    }
 
     //    @Bean
     public InMemoryUserDetailsManager inMemoryUserDetailsManager(PasswordEncoder passwordEncoder) {
@@ -46,6 +55,7 @@ public class SecurityConfig {
                         .requestMatchers("/user/**").hasRole("USER")
                         .anyRequest().authenticated()
                 )
+                .userDetailsService(userDetailsService)
                 .exceptionHandling(exceptionHandling -> exceptionHandling
                         .accessDeniedPage("/notAuthorized")
                 );
